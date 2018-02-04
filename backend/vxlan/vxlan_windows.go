@@ -28,12 +28,14 @@ package vxlan
 import (
 	"encoding/json"
 	"fmt"
+	"sync"
 
 	log "github.com/golang/glog"
 
 	"golang.org/x/net/context"
 
 	"errors"
+
 	"github.com/Microsoft/hcsshim"
 	"github.com/coreos/flannel/backend"
 	"github.com/coreos/flannel/pkg/ip"
@@ -66,7 +68,7 @@ func New(sm subnet.Manager, extIface *backend.ExternalInterface) (backend.Backen
 	return be, nil
 }
 
-func (be *VXLANBackend) RegisterNetwork(ctx context.Context, config *subnet.Config) (backend.Network, error) {
+func (be *VXLANBackend) RegisterNetwork(ctx context.Context, wg sync.WaitGroup, config *subnet.Config) (backend.Network, error) {
 	// TODO: are these used? how to pass to HNS?
 	cfg := struct {
 		name          string
